@@ -1,0 +1,44 @@
+<!-- app/views/admin_panel/user_management.html.erb -->
+
+<h2>User Management</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Last Login Time</th>
+      <th>Registration Time</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.id %></td>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><%= user.last_sign_in_at %></td>
+        <td><%= user.created_at %></td>
+        <td><%= user.status ? 'Active' : 'Blocked' %></td>
+
+        <td>
+          <% if user.status %>
+            <%= form_with(url: block_user_path(user), method: :post, local: true) do |form| %>
+              <%= form.submit "Block", class: "btn btn-danger" %>
+            <% end %>
+          <% else %>
+            <%= form_with(url: unblock_user_path(user), method: :put, local: true, data: { confirm: "Are you sure you want to unblock this user?" }) do |form| %>
+              <%= form.submit "Unblock", class: "btn btn-primary" %>
+            <% end %>
+          <% end %>
+          <%= form_with(url: delete_user_path(user), method: :delete, local: true) do |form| %>
+            <%= form.submit "Delete", class: "btn btn-danger" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
