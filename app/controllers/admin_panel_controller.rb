@@ -11,20 +11,23 @@ class AdminPanelController < ApplicationController
   end
 
   def block_user
-    user = User.find(params[:id])
-    user.update(status: false)
+ 
+    id=params[:id]
+    User.unscoped.where(id: id).update_all(status: "blocked") # Block the user
     redirect_to admin_panel_user_management_path
   end
 
   def unblock_user
-    user = User.find(params[:id])
-    user.update(status: true)
+    id=params[:id]
+    User.unscoped.where(id: id).update_all(status: "active") # Block the user
     redirect_to admin_panel_user_management_path
+
   end
 
   def delete_user
-    user = User.find(params[:id])
-    user.destroy
+    id=params[:id]
+    User.unscoped.where(id: id).destroy_all # Block the user
     redirect_to admin_panel_user_management_path
   end
+  
 end

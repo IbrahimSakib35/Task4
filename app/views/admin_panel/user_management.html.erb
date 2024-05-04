@@ -1,44 +1,134 @@
-<!-- app/views/admin_panel/user_management.html.erb -->
+<div class="container">
+  <!-- Toolbar -->
+  <div class="row mb-3">
+    <div class="col">
+      <button id="block-users" class="btn btn-danger">Block</button>
+      <button id="unblock-users" class="btn btn-primary"> <i class="fa fa-unlock" style="font-size:20px"></i> </button>
+      <button id="delete-users" class="btn btn-danger"><i class="fa fa-trash-o" style="font-size:20px"></i> </button>
 
-<h2>User Management</h2>
+    </div>
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Last Login Time</th>
-      <th>Registration Time</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @users.each do |user| %>
+  <!-- User Management Table -->
+  <table class="table">
+    <thead>
       <tr>
-        <td><%= user.id %></td>
-        <td><%= user.name %></td>
-        <td><%= user.email %></td>
-        <td><%= user.last_sign_in_at %></td>
-        <td><%= user.created_at %></td>
-        <td><%= user.status ? 'Active' : 'Blocked' %></td>
-
-        <td>
-          <% if user.status %>
-            <%= form_with(url: block_user_path(user), method: :post, local: true) do |form| %>
-              <%= form.submit "Block", class: "btn btn-danger" %>
-            <% end %>
-          <% else %>
-            <%= form_with(url: unblock_user_path(user), method: :put, local: true, data: { confirm: "Are you sure you want to unblock this user?" }) do |form| %>
-              <%= form.submit "Unblock", class: "btn btn-primary" %>
-            <% end %>
-          <% end %>
-          <%= form_with(url: delete_user_path(user), method: :delete, local: true) do |form| %>
-            <%= form.submit "Delete", class: "btn btn-danger" %>
-          <% end %>
-        </td>
+        <th><input type="checkbox" id="select-all-users"></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Last Login Time</th>
+        <th>Registration Time</th>
+        <th>Status</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><input type="checkbox" class="user-checkbox" data-user-id="<%= user.id %>"></td>
+          <td><%= user.id %></td>
+          <td><%= user.name %></td>
+          <td><%= user.email %></td>
+          <td><%= user.last_sign_in_at %></td>
+          <td><%= user.created_at %></td>
+          <td><%= user.status %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select or deselect all users when the header checkbox is clicked
+    document.getElementById('select-all-users').addEventListener('change', function() {
+      var checkboxes = document.querySelectorAll('.user-checkbox');
+      for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = this.checked;
+      }
+    });
+
+    // Handle block button click
+    document.getElementById('block-users').addEventListener('click', function() {
+      var selectedUsers = getSelectedUserIds();
+      if (selectedUsers.length > 0 && confirm("Are you sure you want to block selected users?")) {
+        blockUsers(selectedUsers);
+        reloadPage(); // Reload page after action
+      }
+    });
+
+    // Handle unblock button click
+    document.getElementById('unblock-users').addEventListener('click', function() {
+      var selectedUsers = getSelectedUserIds();
+      if (selectedUsers.length > 0 && confirm("Are you sure you want to unblock selected users?")) {
+        unblockUsers(selectedUsers);
+        reloadPage(); // Reload page after action
+      }
+    });
+
+    // Handle delete button click
+    document.getElementById('delete-users').addEventListener('click', function() {
+      var selectedUsers = getSelectedUserIds();
+      if (selectedUsers.length > 0 && confirm("Are you sure you want to delete selected users?")) {
+        deleteUsers(selectedUsers);
+        reloadPage(); // Reload page after action
+      }
+    });
+
+    // Function to get IDs of selected users
+    function getSelectedUserIds() {
+      var selectedUsers = [];
+      var checkboxes = document.querySelectorAll('.user-checkbox:checked');
+      checkboxes.forEach(function(checkbox) {
+        selectedUsers.push(checkbox.dataset.userId);
+      });
+      return selectedUsers;
+    }
+
+    // Function to block selected users
+    function blockUsers(userIds) {
+      userIds.forEach(function(userId) {
+        fetch('/admin_panel/block_user/' + userId, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+      });
+    }
+
+    // Function to unblock selected users
+    function unblockUsers(userIds) {
+      userIds.forEach(function(userId) {
+        fetch('/admin_panel/unblock_user/' + userId, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+      });
+    }
+
+    // Function to delete selected users
+    function deleteUsers(userIds) {
+      userIds.forEach(function(userId) {
+        fetch('/admin_panel/delete_user/' + userId, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+      });
+    }
+
+    // Function to reload the page
+    function reloadPage() {
+      location.reload();
+    }
+  });
+</script>
+
+

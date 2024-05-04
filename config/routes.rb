@@ -7,12 +7,12 @@ Rails.application.routes.draw do
     get '/users/sign_out' => 'devise/sessions#destroy'
   end
   post 'admin_panel/block_user/:id', to: 'admin_panel#block_user', as: :block_user
-  put 'admin_panel/unblock_user/:id', to: 'admin_panel#unblock_user', as: :unblock_user
-  delete 'admin_panel/delete_user/:id', to: 'admin_panel#delete_user', as: :delete_user
-  root to: 'home#index'
+  post 'admin_panel/unblock_user/:id', to: 'admin_panel#unblock_user', as: :unblock_user
+  post 'admin_panel/delete_user/:id', to: 'admin_panel#delete_user', as: :delete_user
+  root 'home#index'
   get 'admin_panel/index'
   get 'admin_panel/user_management'
-  post 'delete/user', to: 'admin_panel#delete_user'
+  # post 'delete/user', to: 'admin_panel#delete_user'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
