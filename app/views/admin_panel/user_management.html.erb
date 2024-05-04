@@ -3,8 +3,8 @@
   <div class="row mb-3">
     <div class="col">
       <button id="block-users" class="btn btn-danger">Block</button>
-      <button id="unblock-users" class="btn btn-primary"> <i class="fa fa-unlock" style="font-size:20px"></i> </button>
-      <button id="delete-users" class="btn btn-danger"><i class="fa fa-trash-o" style="font-size:20px"></i> </button>
+      <button id="unblock-users" class="btn btn-primary"> <i class="fa fa-unlock" style="font-size:20px"></i></button>
+      <button id="delete-users" class="btn btn-danger"><i class="fa fa-trash-o" style="font-size:20px"></i></button>
 
     </div>
   </div>
@@ -115,7 +115,7 @@
     function deleteUsers(userIds) {
       userIds.forEach(function(userId) {
         fetch('/admin_panel/delete_user/' + userId, {
-          method: 'DELETE',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
